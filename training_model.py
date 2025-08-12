@@ -4,13 +4,10 @@ from skimage.feature import hog
 from skimage import io, color
 import albumentations as A
 import os
-
-
-base_dir = "dataset"
-positive_dir = os.path.join(base_dir, "positive")
-negative_dir = os.path.join(base_dir, "negative")
-positive_label = 1
-negative_label = 0
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+import pickle
 
 
 def augmentation(raw_image):
@@ -21,12 +18,12 @@ def augmentation(raw_image):
     augmented = [trans(image=img)["image"] for img in [raw_image, flipped] for trans in transforms]
     fixed_size_transform = A.Compose([
         A.PadIfNeeded(
-            min_height=250,
-            min_width=800,
+            min_height=32,
+            min_width=100,
             border_mode=cv2.BORDER_REFLECT,
             position='top_left'
         ),
-        A.Resize(height=250, width=800, interpolation=cv2.INTER_AREA)
+        A.Resize(height=32, width=100, interpolation=cv2.INTER_AREA)
     ])
 
     return [fixed_size_transform(image=img)["image"] for img in augmented]
@@ -51,9 +48,31 @@ def create_hog_features(images_folder, class_label):
     return np.array(features), np.array(labels)
 
 
-X_positive, Y_positive = create_hog_features(positive_dir, positive_label)
-X_negative, Y_negative = create_hog_features(negative_dir, negative_label)
 
-X = np.vstack((X_positive, X_negative))
-Y = np.hstack((Y_positive, Y_negative))
-print(X.shape)
+def fit_model():
+    base_dir = "dataset"
+    positive_dir = os.path.join(base_dir, "positive")
+    negative_dir = os.path.join(base_dir, "negative")
+    positive_label = 1
+    negative_label = 0
+
+    X_positive, y_positive = create_hog_features(positive_dir, positive_label)
+    X_negative, y_negative = create_hog_features(negative_dir, negative_label)
+
+    X = np.vstack((X_positive, X_negative))
+    Y = np.hstack((y_positive, y_negative))
+
+    #X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
+    #y_pred = svm.predict(X_test)
+    #print(classification_report(y_test, y_pred))
+
+    #svm = SVC(kernel='linear', C=1.0)
+    #svm.fit(X, Y)
+
+    #with open('model.pkl2', 'wb') as f:
+       # pickle.dump(svm, f)
+
+
+if __name__ == '__main__':
+    fit_model()
+
