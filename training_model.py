@@ -18,12 +18,12 @@ def augmentation(raw_image):
     augmented = [trans(image=img)["image"] for img in [raw_image, flipped] for trans in transforms]
     fixed_size_transform = A.Compose([
         A.PadIfNeeded(
-            min_height=32,
-            min_width=100,
+            min_height=64,
+            min_width=200,
             border_mode=cv2.BORDER_REFLECT,
             position='top_left'
         ),
-        A.Resize(height=32, width=100, interpolation=cv2.INTER_AREA)
+        A.Resize(height=64, width=200, interpolation=cv2.INTER_AREA)
     ])
 
     return [fixed_size_transform(image=img)["image"] for img in augmented]
@@ -62,15 +62,16 @@ def fit_model():
     X = np.vstack((X_positive, X_negative))
     Y = np.hstack((y_positive, y_negative))
 
-    #X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
+    svm = SVC(kernel='linear', C=5.0, probability=True)
+    svm.fit(X, Y)
+
+    #X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3)
     #y_pred = svm.predict(X_test)
     #print(classification_report(y_test, y_pred))
 
-    #svm = SVC(kernel='linear', C=1.0)
-    #svm.fit(X, Y)
-
-    #with open('model.pkl2', 'wb') as f:
-       # pickle.dump(svm, f)
+    with open('model6.pkl', 'wb') as f:
+        pickle.dump(svm, f)
+    print('DONE!')
 
 
 if __name__ == '__main__':
