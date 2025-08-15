@@ -149,3 +149,4 @@ def detect_objects(image_detection: np.ndarray, model: 'sklearn.svm.SVC') -> lis
         found_boxes = non_max_suppression(np.array(found_boxes), np.array(confidences), threshold)
 
     return found_boxes
+
