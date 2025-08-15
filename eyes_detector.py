@@ -1,11 +1,10 @@
-from skimage.feature import hog
-from skimage import color
 import numpy as np
 import pickle
 import cv2
+import os
 
 
-with open('model_name.pkl', 'rb') as f:
+with open('faces-model3_cv.pkl', 'rb') as f:
     model = pickle.load(f)
 
 
@@ -53,43 +52,55 @@ def non_max_suppression(boxes, scores, iou_threshold):
 
 
 def detect_objects(image_detection):
-    scales_mult = [1, 0.75, 0.5]
-    size_windows = (200, 64)
-    slide_step = 26
-    threshold = 0.2
-    min_confidence = 0.8
+    scales_mult = [1, 0.6]
+    size_windows = (160, 256)
+    slide_step = 16
+    threshold = 0.1
+    min_confidence = 0.99
     confidences = []
     found_boxes = []
-    gray_image = color.rgb2gray(image_detection)
+    gray_image = cv2.cvtColor(image_detection, cv2.COLOR_BGR2GRAY)
+    hog = cv2.HOGDescriptor(
+        _winSize=size_windows,
+        _blockSize=(16, 16),
+        _blockStride=(8, 8),
+        _cellSize=(8, 8),
+        _nbins=9)
+
     for scaled_img, scale in image_pyramid(gray_image, scales_mult):
         for (x, y, window) in sliding_window(scaled_img, slide_step, size_windows):
             if window.shape[0] != size_windows[1] or window.shape[1] != size_windows[0]:
                 continue
 
-            hog_features = hog(window, orientations=9,
-                               pixels_per_cell=(8, 8),
-                               cells_per_block=(2, 2),
-                               visualize=False)
-
+            hog_features = hog.compute(window)
             predicted_prob = model.predict_proba([hog_features])[0]
             if predicted_prob[1] > predicted_prob[0] and predicted_prob[1] > min_confidence:
-                x_1, y_1 = int(x * scale), int(y * scale)
-                x_2, y_2 = int((x + size_windows[0]) * scale), int((y + size_windows[1]) * scale)
+                x_1, y_1 = int(x / scale), int(y / scale)
+                x_2, y_2 = int((x + size_windows[0]) / scale), int((y + size_windows[1]) / scale)
                 found_boxes.append([x_1, y_1, x_2, y_2])
                 confidences.append(float(predicted_prob[1]))
 
     if len(found_boxes) > 0:
         found_boxes = non_max_suppression(np.array(found_boxes), np.array(confidences), threshold)
-
+    print(len(found_boxes))
     return found_boxes
 
 
-image = cv2.imread('image.jpg')
-detections = detect_objects(image)
 
-for (x1, y1, x2, y2) in detections:
-    cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+base_dir = "dataset"
+test_dir = os.path.join(base_dir, "test_pics")
 
-cv2.imshow('Detection', image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+for IMG in os.listdir(test_dir):
+    image = cv2.imread(os.path.join(test_dir, IMG))
+    detections = detect_objects(image)
+    for (x1, y1, x2, y2) in detections:
+        cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+    cv2.imshow('Detection', image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+
+
+
+
