@@ -115,3 +115,4 @@ def train_model() -> None:
 
 if __name__ == '__main__':
     train_model()
+
