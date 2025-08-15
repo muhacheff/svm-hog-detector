@@ -1,10 +1,9 @@
 import numpy as np
 import pickle
 import cv2
-import os
 
 
-with open('faces-model3_cv.pkl', 'rb') as f:
+with open('faces_detector.pkl', 'rb') as f:
     model = pickle.load(f)
 
 
@@ -52,8 +51,8 @@ def non_max_suppression(boxes, scores, iou_threshold):
 
 
 def detect_objects(image_detection):
-    scales_mult = [1, 0.6]
-    size_windows = (160, 256)
+    scales_mult = [0.8]
+    size_windows = (176, 256)
     slide_step = 16
     threshold = 0.1
     min_confidence = 0.99
@@ -82,25 +81,5 @@ def detect_objects(image_detection):
 
     if len(found_boxes) > 0:
         found_boxes = non_max_suppression(np.array(found_boxes), np.array(confidences), threshold)
-    print(len(found_boxes))
+
     return found_boxes
-
-
-
-base_dir = "dataset"
-test_dir = os.path.join(base_dir, "test_pics")
-
-for IMG in os.listdir(test_dir):
-    image = cv2.imread(os.path.join(test_dir, IMG))
-    detections = detect_objects(image)
-    for (x1, y1, x2, y2) in detections:
-        cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-    cv2.imshow('Detection', image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-
-
-
-
-
