@@ -45,3 +45,4 @@ if __name__ == '__main__':
 
     # Run extraction process
     extract_objects_from_img(img_folder, xml_folder, output_folder)
+
