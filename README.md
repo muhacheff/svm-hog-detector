@@ -1,5 +1,7 @@
 ## SVM-HOG-DETECTOR
-
+<div id="header" align="center">
+  <img src="https://media.giphy.com/media/M9gbBd9nbDrOTu1Mqx/giphy.gif" width="100"/>
+</div>
 ## Main description
 The project implements a face classifier based on SVM (Support Vector Machine) and HOG (Histogram of Oriented Gradients).The model is capable of detecting a wide range of objects; this project showcases its application as an image-based face detector.
 
