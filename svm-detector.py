@@ -23,7 +23,7 @@ def sliding_window(img_slide: np.ndarray, step_size: int, window_size: tuple) ->
 
 def image_pyramid(img_pyramid: np.ndarray, scales_list: list) -> tuple:
     """
-    Generate scale versions of an image.
+    Generating scale versions of an image.
 
     Args:
         img_pyramid: Input image
@@ -39,7 +39,7 @@ def image_pyramid(img_pyramid: np.ndarray, scales_list: list) -> tuple:
 
 def non_max_suppression(boxes: np.ndarray, scores: np.ndarray, iou_threshold: float) -> np.ndarray:
     """
-    Apply Non-Maximum Suppression (NMS) to eliminate overlapping bounding boxes.
+    Applying Non-Maximum Suppression (NMS) to eliminate overlapping bounding boxes.
 
     Args:
         boxes: Array of bounding boxes in [x1,y1,x2,y2] format
@@ -92,7 +92,7 @@ def non_max_suppression(boxes: np.ndarray, scores: np.ndarray, iou_threshold: fl
 
 def detect_objects(image_detection: np.ndarray, model: 'sklearn.svm.SVC') -> list:
     """
-    Detect objects in an image using HOG features and SVM classifier.
+    Detecting objects in an image using HOG features and SVM classifier.
 
     Args:
         image_detection: Input BGR image
