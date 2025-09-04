@@ -6,7 +6,7 @@ The project implements a face classifier based on SVM (Support Vector Machine) a
 ##  List of used libraries
 
 - xml.etree, os, pickle
-- cv2, numpy, cv2 
+- cv2, numpy
 - albumentations, sklearn
 
 ## Usage
